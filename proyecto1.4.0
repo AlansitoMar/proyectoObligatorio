@@ -1,1 +1,105 @@
+window.addEventListener("load", inicio);
 
+// Clientes precargados
+let idClientes = 0;
+let clientes = [
+    new Cliente(idClientes++, "Alan", "alansitomar", "1234"),
+    new Cliente(idClientes++, "Gabi", "gabrielsitomar", "Messi10")
+];
+
+//Locales precargados
+let idLocales = 0;
+let locales = [
+    new Local(idLocales++, "Martine'z Bar", "Local0", "Local00", "Restaurante", "img", "50", false),
+    new Local(idLocales++, "Teatro Rivero & Contreras", "Local1", "Local01", "Teatro", "img", "25", false),
+    new Local(idLocales++, "Hotel Mia", "Local2", "Local02", "Hotel", "img", "80", false),
+    new Local(idLocales++, "Tao Hotel", "Local3", "Local03", "Hotel", "img", "100", false),
+    new Local(idLocales++, "Teatro Carlitos Montoya", "Local4", "Local04", "Teatro", "img", "50", false),
+    new Local(idLocales++, "Garrafa 3Kg", "Local5", "Local05", "Restaurante", "img", "30", false),
+    new Local(idLocales++, "La champions liga", "Local6", "Local06", "Restaurante", "img", "65", false)
+];
+
+
+function inicio() {
+    document.querySelector("#btnIngresarLogin").addEventListener("click", access);
+    document.querySelector("#btnRegister").addEventListener("click", clientRegister);
+    document.querySelector("#exitHC").addEventListener("click", signOff);
+}
+
+let ok = false;
+function access() {
+    let user = document.querySelector("#inpUserLogin").value;
+    let password = document.querySelector("#inpPasswordLogin").value;
+
+    for (let i = 0; i < clientes.length; i++) {
+        if (user === clientes[i].user && password === clientes[i].password) {
+            ok = true;
+        }
+    }
+
+    if (ok) {
+        homeClient();
+    } else {
+        document.querySelector("#msgFailUserLogin").textContent = "Usuario o contraseña incorrectos.";
+    }
+}
+
+function clientRegister() {
+    let name = document.querySelector("#inpNameRegister").value;
+    let user = document.querySelector("#inpUserRegister").value;
+    let password = document.querySelector("#inpPasswordRegister").value;
+
+    if (validateRegister(user, password)) {
+        clientes.push(new Cliente(idClientes++, name, user, password));
+    }
+}
+
+function validateRegister(user, password) {
+    let p0 = document.querySelector("#msgFailUserRegister0");
+    let p1 = document.querySelector("#msgFailUserRegister1");
+    let p2 = document.querySelector("#msgFailUserRegister2");
+    let p3 = document.querySelector("#msgFailUserRegister3");
+    let userValidate = true;
+    let passValidate = false;
+    let contieneNum = false;
+    let mayus = false;
+    let minus = false;
+
+    for (let i = 0; i < clientes.length; i++) { // Valida que el usuario no es igual a ningún otro del arreglo clientes.
+        if (user == clientes[i].user) {
+            userValidate = false;
+        }
+    }
+    if (password.length >= 6) { //La contraseña debe tener más de 6 caracteres
+        for (let i = 0; i < password.length; i++) {
+            if (!isNaN(password[i])) { // El caracter debe ser igual a un número para que se valide
+                contieneNum = true;
+            }
+            if (password.charCodeAt(password[i]) > 64 && password.charCodeAt(password[i]) < 91) { // El caracter debe ser igual a una mayúscula para que se valide
+                console.log(password.charCodeAt(password[i]));
+                mayus = true;
+            }
+            if (password.charCodeAt(password[i]) > 96 && password.charCodeAt(password[i]) < 123) { // El caracter debe ser igual a una minúscula para que se valide
+                console.log(password.charCodeAt(password[i]));
+                minus = true;
+            }
+            console.log(",caracter: " + password[i], "userValidate: " + userValidate, ",contieneNum: " + contieneNum, ",mayus: " + mayus, ",minus: " + minus, ",passValidate: " + passValidate);
+        }
+    }
+    if (contieneNum && mayus && minus) { // Valida que las condiciones de la contraseña sean todas aceptables.
+        passValidate = true;
+    }
+
+    //console.log(",caracter: " + password[i], "userValidate: " + userValidate, ",contieneNum: " + contieneNum, ",mayus: " + mayus, ",minus: " + minus, ",passValidate: " + passValidate);
+
+
+    return userValidate && passValidate; // Devuelve booleanos (true && true), en caso de que se validen ambos.
+}
+
+function signOff() { // Hay que hacer un reset de clientes para que no deje volver a ingresar
+    document.querySelector("#inpUserLogin").value = "";
+    document.querySelector("#inpPasswordLogin").value = "";
+    inicio();
+}
+
+// validateRegister → El charCodeAt toma el primer valor "letra" de la cadena y lo repite durante todo el for, el valor cambia cuando se interpone un número por delante. Corregir.
